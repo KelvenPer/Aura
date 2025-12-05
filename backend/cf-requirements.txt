@@ -1,6 +1,9 @@
 fastapi
-pydantic
+uvicorn
 sqlalchemy
+pydantic
+alembic
+python-dotenv
 python-jose
 cryptography
 passlib
