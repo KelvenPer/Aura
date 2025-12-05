@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from database import Base, engine
+# from database import Base, engine  <-- Removido para evitar erro de conexão no boot
 from routers import agendamentos, auth, financeiro, pacientes
-from security import ensure_default_admin
+# from security import ensure_default_admin <-- Removido pois depende do engine síncrono
 
 app = FastAPI(
     title=settings.app_name,
@@ -14,7 +13,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Permite consumir a API a partir do app mobile ou web
+# Configuração de CORS (Mantida)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,22 +22,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.on_event("startup")
-def on_startup() -> None:
-    Base.metadata.create_all(bind=engine)
-    ensure_default_admin()
-
+# --- ATENÇÃO: STARTUP EVENTS REMOVIDOS ---
+# No Cloudflare Workers, não usamos create_all().
+# As tabelas devem ser criadas via migrações SQL (wrangler d1 migrations execute).
+# O ensure_default_admin também foi removido temporariamente para evitar erros de conexão.
 
 @app.get("/")
-def health_check():
+def health_check(request: Request):
+    # Verifica se o banco D1 foi injetado pelo entry.py
+    db_status = "conectado" if hasattr(request.app.state, "db") else "desconectado"
+    
     return {
         "status": "online",
         "system": "AURA",
+        "database": db_status,
+        "environment": "Cloudflare Workers",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-
+# Rotas
 app.include_router(auth.router)
 app.include_router(pacientes.router)
 app.include_router(agendamentos.router)
