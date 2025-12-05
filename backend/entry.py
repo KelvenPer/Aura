@@ -2,4 +2,5 @@ from workers import WorkerEntrypoint, Response
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        return Response("Backend Python no Cloudflare!")
+        results = await self.env.DB.prepare("PRAGMA table_list").run()
+        return Response.json(results)
