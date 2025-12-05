@@ -1,17 +1,14 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "aura",
-  "main": "entry.py",
-  "compatibility_date": "2025-12-05",
-
+  "main": "main.py",
+  "compatibility_date": "2025-12-01",
+  "compatibility_flags": ["python_workers"],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "aura-db",
       "database_id": "f996d8b8-79c4-4ae6-9164-fcd6ee7d7cff",
-      "preview_database_id": "f996d8b8-79c4-4ae6-9164-fcd6ee7d7cff",
-      "migrations_dir": "migrations",
-      "migrations_table": "d1_migrations"
+      "migrations_dir": "migrations"
     }
   ]
 }
