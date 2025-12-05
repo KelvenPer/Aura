@@ -1,6 +1,3 @@
 fastapi
 pydantic
 sqlalchemy
-python-jose
-passlib
-email-validator
