@@ -17,6 +17,7 @@ class Settings:
     admin_email: str = os.getenv("ADMIN_EMAIL", "dr.kelven@aura.app")
     admin_password: str = os.getenv("ADMIN_PASSWORD", "aura123")
     admin_name: str = os.getenv("ADMIN_NAME", "Dr. Kelven")
+    environment: str = os.getenv("ENVIRONMENT", "dev")
 
 
 settings = Settings()

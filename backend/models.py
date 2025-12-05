@@ -18,11 +18,18 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(50), default="doctor")
+    telefone = Column(String(30), nullable=True)
+    crm = Column(String(50), unique=True, nullable=True)
+    is_active = Column(Boolean, default=True)
+    last_login = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
     pacientes = relationship("Paciente", back_populates="responsavel")
     agendamentos = relationship("Agendamento", back_populates="responsavel")
     transacoes = relationship("Transacao", back_populates="responsavel")
+    reset_tokens = relationship(
+        "PasswordResetToken", back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Paciente(Base):
@@ -71,3 +78,16 @@ class Transacao(Base):
     responsavel_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     responsavel = relationship("User", back_populates="transacoes")
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token_hash = Column(String(255), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    is_used = Column(Boolean, default=False)
+
+    user = relationship("User", back_populates="reset_tokens")

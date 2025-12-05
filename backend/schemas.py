@@ -8,6 +8,8 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     nome: str
     email: EmailStr
+    telefone: Optional[str] = None
+    crm: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -17,6 +19,8 @@ class UserCreate(UserBase):
 class UserOut(UserBase):
     id: int
     role: str
+    is_active: bool
+    last_login: Optional[datetime] = None
     created_at: datetime
 
     class Config:
@@ -36,6 +40,27 @@ class TokenPayload(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetOut(BaseModel):
+    message: str
+    expires_at: datetime
+    token: Optional[str] = None  # Retorna token apenas em ambiente dev para testes
+
+
+class PasswordResetConfirm(BaseModel):
+    email: EmailStr
+    token: str
+    new_password: str
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
 
 
 # --- PACIENTES ---

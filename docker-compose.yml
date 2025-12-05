@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -32,6 +30,7 @@ services:
       ADMIN_EMAIL: "dr.kelven@aura.app"
       ADMIN_PASSWORD: "aura123"
       ADMIN_NAME: "Dr. Kelven"
+      ENVIRONMENT: "prod"
 
 volumes:
   aura_db_data:
