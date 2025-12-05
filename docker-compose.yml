@@ -28,6 +28,10 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: "postgresql://postgres:Saladas.2@db:5432/aura_db"
+      JWT_SECRET: "change-me-please"
+      ADMIN_EMAIL: "dr.kelven@aura.app"
+      ADMIN_PASSWORD: "aura123"
+      ADMIN_NAME: "Dr. Kelven"
 
 volumes:
   aura_db_data:

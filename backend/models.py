@@ -10,6 +10,21 @@ def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(120), nullable=False)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    role = Column(String(50), default="doctor")
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    pacientes = relationship("Paciente", back_populates="responsavel")
+    agendamentos = relationship("Agendamento", back_populates="responsavel")
+    transacoes = relationship("Transacao", back_populates="responsavel")
+
+
 class Paciente(Base):
     __tablename__ = "pacientes"
 
@@ -19,7 +34,9 @@ class Paciente(Base):
     email = Column(String(255), nullable=True)
     cpf = Column(String(11), unique=True, nullable=True)
     data_cadastro = Column(DateTime(timezone=True), default=utcnow)
+    responsavel_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
+    responsavel = relationship("User", back_populates="pacientes")
     agendamentos = relationship("Agendamento", back_populates="paciente", cascade="all, delete-orphan")
 
 
@@ -32,9 +49,13 @@ class Agendamento(Base):
     data_hora_fim = Column(DateTime(timezone=True), nullable=False)
     tipo = Column(String(50), nullable=False)
     status = Column(String(20), default="agendado", nullable=False)
+    valor_previsto = Column(Numeric(12, 2), nullable=True)
+    sala = Column(String(50), nullable=True)
     observacoes = Column(Text, nullable=True)
+    responsavel_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     paciente = relationship("Paciente", back_populates="agendamentos")
+    responsavel = relationship("User", back_populates="agendamentos")
 
 
 class Transacao(Base):
@@ -47,3 +68,6 @@ class Transacao(Base):
     categoria = Column(String(50), nullable=False)
     data_competencia = Column(DateTime(timezone=True), default=utcnow)
     pago = Column(Boolean, default=False)
+    responsavel_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    responsavel = relationship("User", back_populates="transacoes")
