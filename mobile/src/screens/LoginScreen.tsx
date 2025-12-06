@@ -37,8 +37,8 @@ const DEFAULT_EMAIL = "dr.kelven@aura.app";
 const DEFAULT_PASSWORD = "aura123";
 
 export default function LoginScreen({ onSuccess }: LoginScreenProps) {
-  const [email, setEmail] = useState(DEFAULT_EMAIL);
-  const [password, setPassword] = useState(DEFAULT_PASSWORD);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -181,6 +181,11 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
     }
   };
 
+  const prefillAdmin = () => {
+    setEmail(DEFAULT_EMAIL);
+    setPassword(DEFAULT_PASSWORD);
+  };
+
   const subtitle = useMemo(
     () => "Acesso seguro para sua rotina de atendimentos e gestao financeira",
     []
@@ -255,6 +260,9 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
     isPassword,
     keyboardType,
     fieldKey,
+    editable = true,
+    autoFocus,
+    selectTextOnFocus,
   }: {
     label: string;
     value: string;
@@ -264,6 +272,9 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
     isPassword?: boolean;
     keyboardType?: "email-address" | "default" | "phone-pad";
     fieldKey: string;
+    editable?: boolean;
+    autoFocus?: boolean;
+    selectTextOnFocus?: boolean;
   }) => {
     const focused = focusedField === fieldKey;
     return (
@@ -289,6 +300,9 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
             style={styles.input}
             onFocus={() => setFocusedField(fieldKey)}
             onBlur={() => setFocusedField(null)}
+            editable={editable}
+            autoFocus={autoFocus}
+            selectTextOnFocus={selectTextOnFocus}
           />
         </View>
         {isPassword && (
@@ -331,7 +345,7 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.safe} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <ScrollView contentContainerStyle={styles.scroll}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.background}>
             <Animated.View style={[styles.orbIndigo, orbAStyle]} />
             <Animated.View style={[styles.orbViolet, orbBStyle]} />
@@ -354,9 +368,14 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
           </Animated.View>
 
           <Animated.View style={[styles.card, formStyle]}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.formTitle}>Entrar</Text>
-              <Text style={styles.formSub}>Acesso seguro e instantaneo.</Text>
+            <View style={[styles.cardHeader, { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]}>
+              <View>
+                <Text style={styles.formTitle}>Entrar</Text>
+                <Text style={styles.formSub}>Acesso seguro e instantaneo.</Text>
+              </View>
+              <TouchableOpacity onPress={prefillAdmin} style={styles.demoFillButton}>
+                <Text style={styles.demoFillText}>Usar admin demo</Text>
+              </TouchableOpacity>
             </View>
 
             {renderInput({
@@ -367,6 +386,9 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
               placeholder: "dr.kelven@aura.app",
               keyboardType: "email-address",
               fieldKey: "email",
+              autoFocus: true,
+              selectTextOnFocus: true,
+              editable: !loading,
             })}
 
             {renderInput({
@@ -377,6 +399,8 @@ export default function LoginScreen({ onSuccess }: LoginScreenProps) {
               placeholder: "Sua senha",
               isPassword: true,
               fieldKey: "password",
+              selectTextOnFocus: true,
+              editable: !loading,
             })}
 
             <View style={styles.forgotRow}>
@@ -782,6 +806,15 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.04)",
   },
   cardHeader: { gap: 4 },
+  demoFillButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(99,102,241,0.35)",
+    backgroundColor: "rgba(99,102,241,0.12)",
+  },
+  demoFillText: { color: "#C7D2FE", fontSize: 11, fontWeight: "800" },
   formTitle: { color: "#E5E7EB", fontSize: 18, fontWeight: "800" },
   formSub: { color: "#9CA3AF", fontSize: 13 },
   inputRow: {

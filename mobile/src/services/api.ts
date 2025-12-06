@@ -1,4 +1,6 @@
 import axios from "axios";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
 // ---------------------------------------------------------------------------
 // Configuracao de rede
@@ -6,8 +8,35 @@ import axios from "axios";
 // Emulador Android: http://10.0.2.2:8000
 // iOS Simulator:    http://localhost:8000
 // Dispositivo fisico: use o IP da sua maquina, ex: http://192.168.X.X:8000
-// Como voce esta abrindo via exp://192.168.100.12, defina o fallback para esse host
-let API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.100.12:8000";
+// Resolve automaticamente com base no host do Metro (exp://<HOST>:8081) quando possivel
+const resolveDefaultBaseURL = () => {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+
+  const constants = Constants as any;
+  const hostUri =
+    constants?.expoGoConfig?.hostUri ||
+    constants?.expoConfig?.hostUri ||
+    constants?.manifest?.hostUri;
+
+  if (hostUri) {
+    const host = hostUri.replace(/^(https?|exp):\/\//, "").split(":")[0];
+    return `http://${host}:8000`;
+  }
+
+  if (Platform.OS === "android") {
+    return "http://10.0.2.2:8000";
+  }
+
+  return "http://localhost:8000";
+};
+
+let API_BASE_URL = resolveDefaultBaseURL();
+
+if (__DEV__) {
+  console.log("[AuraAPI] Base URL:", API_BASE_URL);
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,

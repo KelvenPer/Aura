@@ -8,4 +8,5 @@ python-dotenv
 python-jose[cryptography]
 passlib[bcrypt]
 email-validator
-bcrypt
+# Fix incompatibilidade do passlib com bcrypt 4.x (AttributeError __about__ e erro 72 bytes)
+bcrypt==3.2.2

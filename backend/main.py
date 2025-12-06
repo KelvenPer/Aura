@@ -27,7 +27,7 @@ def health_check(request: Request):
         "status": "online",
         "system": "AURA",
         "database": db_status,
-        "environment": "Cloudflare Workers",
+        "environment": settings.environment,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
